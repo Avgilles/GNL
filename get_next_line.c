@@ -6,7 +6,7 @@
 /*   By: gavraam <gavraam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 14:27:06 by gavraam           #+#    #+#             */
-/*   Updated: 2026/01/02 14:42:19 by gavraam          ###   ########.fr       */
+/*   Updated: 2026/01/02 16:14:33 by gavraam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	*read_from_file(int fd, char *stash)
 	ssize_t		read_byte;
 	char		*buffer;
 
-	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
 		return (NULL);
 	read_byte = 1;
@@ -65,7 +65,7 @@ char	*read_from_file(int fd, char *stash)
 	{
 		read_byte = read(fd, buffer, BUFFER_SIZE);
 		if (read_byte == -1)
-			return (free(buffer), NULL);
+			return (free(buffer), free(stash), NULL);
 		buffer[read_byte] = '\0';
 		stash = append_to_stash(stash, buffer);
 		if (!stash)
