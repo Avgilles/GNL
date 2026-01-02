@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gavraam <gavraam@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 14:27:06 by gavraam           #+#    #+#             */
-/*   Updated: 2026/01/02 14:42:19 by gavraam          ###   ########.fr       */
+/*   Updated: 2026/01/02 14:41:51 by gavraam          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*append_to_stash(char *stash, char *buffer)
 {
@@ -77,50 +77,59 @@ char	*read_from_file(int fd, char *stash)
 
 char	*get_next_line(int fd)
 {
-	static char		*stash;
+	static char		*stash[1024];
 	char			*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= 1024)
 		return (NULL);
-	if (!stash)
+	if (!stash[fd])
 	{
-		stash = malloc(sizeof(char) * 1);
-		if (!stash)
+		stash[fd] = malloc(sizeof(char) * 1);
+		if (!stash[fd])
 			return (NULL);
-		stash[0] = '\0';
+		stash[fd][0] = '\0';
 	}
-	stash = read_from_file(fd, stash);
-	if (!stash || stash[0] == '\0')
-		return (free(stash), stash = NULL, NULL);
-	line = extract_line(stash);
-	stash = obtain_remaining_stash(stash);
+	stash[fd] = read_from_file(fd, stash[fd]);
+	if (!stash[fd] || stash[fd][0] == '\0')
+		return (free(stash[fd]), stash[fd] = NULL, NULL);
+	line = extract_line(stash[fd]);
+	stash[fd] = obtain_remaining_stash(stash[fd]);
 	return (line);
 }
-
 /*
 int	main(void)
 {
 	char	*line = NULL;
-	int		i;
 	int		fd1;
+	int		fd2;
+	int		fd3;
 
 	fd1 = open("test.txt", O_RDONLY);
-	i = 0;
+	fd2 = open("test_2.txt", O_RDONLY);
+	fd3 = open("test_3.txt", O_RDONLY);
+	printf("\n 1 -------------- \n");
+	
 	while ((line = get_next_line(fd1)) != NULL)
 	{
-		// printf("%s", line);
-		printf("line [%02d]: %s", i, line);
-		i++;
+		printf("%s", line);
 		free(line);
 	}
-	// line = get_next_line(fd1);
-	// printf("line [%02d]: %s", 1, line);
-	// line = get_next_line(fd1);
-	// printf("line [%02d]: %s", 2, line);
-	// line = get_next_line(fd1);
-	// printf("line [%02d]: %s", 3, line);
+	printf("\n 2 -------------- \n");
+	while ((line = get_next_line(fd2)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
+	printf("\n 3 -------------- \n");
+	while ((line = get_next_line(fd3)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
 
 	close(fd1);
+	close(fd2);
+	close(fd3);
 	return (0);
 }
 */
